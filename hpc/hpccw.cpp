@@ -149,7 +149,7 @@ void printMatrix(int m, int n, double* Y, int prec){
 void generateVtk(double** Coord, int nnode, int nelem, int nelem_x, int nelem_y, int** ElemNode, double* T){
     
     ofstream vtkfile; //创建个对象
-    vtkfile.open("program11.txt");
+    vtkfile.open("vtk.txt");
     
     vtkfile <<"vtk output" << endl;
     vtkfile <<"ASCII" << endl;
@@ -162,7 +162,8 @@ void generateVtk(double** Coord, int nnode, int nelem, int nelem_x, int nelem_y,
             vtkfile << Coord[i][j] <<" ";
         }
         vtkfile << "0.0" <<" ";
-    } cout << endl;
+    }
+    cout << endl;
     
     vtkfile <<"CELLS" << " " << nelem <<" "<< nelem * nelem << endl;
     
