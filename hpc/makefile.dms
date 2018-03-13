@@ -1,0 +1,47 @@
+# Define all the Targets
+TARGET1 = c1
+TARGET2 = c2
+TARGET3 = c3
+TARGET = compile.o
+
+CXX = mpicxx
+EXE = mpiexec
+CXXFLAGS = -std=c++11 -Wall -O2
+LIBS = -llapack -lblas
+
+# Compile all .cpp files
+CPP_FILES = $(shell ls *.cpp)
+BASE = $(basename $(CPP_FILES))
+OBJS = $(addsuffix .o, $(addprefix obj/,$(BASE)))
+
+
+
+.PHONY: clean run
+
+all: $(TARGET)
+default: $(TARGET)
+
+$(TARGET): $(OBJS) $(HDRS)
+	-rm -f $@
+	$(CXX) -g -o $@ $^ $(LIBS)
+
+# Run the cases
+$(TARGET1):
+	./$(TARGET) 1 0.0 1.0 1.0 2.0 0.2 250 0 250 10 5
+$(TARGET2):
+	./$(TARGET) 2 0.0 1.0 1.0 2.0 0.2 250 0 250 10 5
+$(TARGET3):
+	./$(TARGET) 3 0.25 1.0 1.3 3.0 0.2 250 0 250 15 8
+
+
+obj/%.o: %.cpp $(HDRS)
+	-rm -f $@
+	$(CXX) $(CXXFLAGS) -o $@ -c $< $(LIBS)
+
+clean:
+	-rm -f $(TARGET1) $(TARGET2) $(TARGET3)
+	-rm -f obj/*.o
+	-rm -f *.temp
+	-rm -f *.save
+	-rm -f *.txt
+
