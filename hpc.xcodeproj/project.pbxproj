@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		0907BD81205737090021A709 /* hpccw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0907BD80205737090021A709 /* hpccw.cpp */; };
 		0907BDA920573D4B0021A709 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 0907BDA820573D4B0021A709 /* Makefile */; };
+		0909AA2520588AB600BB2782 /* left.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0909AA2320588AB600BB2782 /* left.cpp */; };
+		0909AA2820588ACB00BB2782 /* right.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0909AA2620588ACB00BB2782 /* right.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +28,10 @@
 /* Begin PBXFileReference section */
 		0907BD80205737090021A709 /* hpccw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hpccw.cpp; sourceTree = "<group>"; };
 		0907BDA820573D4B0021A709 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		0909AA2320588AB600BB2782 /* left.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = left.cpp; sourceTree = "<group>"; };
+		0909AA2420588AB600BB2782 /* left.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = left.hpp; sourceTree = "<group>"; };
+		0909AA2620588ACB00BB2782 /* right.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = right.cpp; sourceTree = "<group>"; };
+		0909AA2720588ACB00BB2782 /* right.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = right.hpp; sourceTree = "<group>"; };
 		0952244E205351AA00BE3975 /* hpc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = hpc; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -61,6 +67,10 @@
 			children = (
 				0907BDA820573D4B0021A709 /* Makefile */,
 				0907BD80205737090021A709 /* hpccw.cpp */,
+				0909AA2320588AB600BB2782 /* left.cpp */,
+				0909AA2420588AB600BB2782 /* left.hpp */,
+				0909AA2620588ACB00BB2782 /* right.cpp */,
+				0909AA2720588ACB00BB2782 /* right.hpp */,
 			);
 			path = hpc;
 			sourceTree = "<group>";
@@ -122,8 +132,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0909AA2820588ACB00BB2782 /* right.cpp in Sources */,
 				0907BDA920573D4B0021A709 /* Makefile in Sources */,
 				0907BD81205737090021A709 /* hpccw.cpp in Sources */,
+				0909AA2520588AB600BB2782 /* left.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
