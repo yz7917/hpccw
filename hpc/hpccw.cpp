@@ -265,8 +265,8 @@ int main(int argc, const char * argv[]) {
             k++;
         }
     }
-    
-    //print2dint(nelem_y+1, nelem_x+1, NodeTopo);
+    cout << "nodetopo" << endl;
+    print2dint(nelem_y+1, nelem_x+1, NodeTopo);
     ///------ElemNode, eNode, eCoord, ElemX, ElemY------
     int** ElemNode = new int*[nelem];
     for(int i=0; i<nelem; i++) ElemNode[i] = new int[5];
@@ -681,17 +681,15 @@ int main(int argc, const char * argv[]) {
     // ~mask_E
     int lenfF = nDof - lenTE;
     int it3 = 0;
-    int* inv_index = new int[lenfF];
     int itf_F = 0;
     double* f_F = new double[lenfF];
     for(int i=0; i<nnode; i++){
         if(mask_E[i]==1){
-            invmask_E[i]=0;
+            invmask_E[i] = 0;
         }
         else if (mask_E[i]==0){
-            invmask_E[i]=1;
+            invmask_E[it3] = i;
             f_F[itf_F] = f[i];
-            inv_index[it3] = i;
             itf_F ++;
             it3 ++;
         }
@@ -708,30 +706,10 @@ int main(int argc, const char * argv[]) {
         }
     }
     
-    // convert 2d array nodetopo into 1d array nodetopo1
-    int it1 = 0;
-    int* nodetopo1 = new int[nDof];
-    for(int j=0; j<nelem_x+1; j++){
-        for(int i=0; i<nelem_y+1; i++){
-            nodetopo1[it1] = NodeTopo[i][j];
-            it1 ++;
-        }
-    }
-    //printia(nDof, nodetopo1);
-    
-    // delete the B.C. from 1d array nodetopo and form nodetopo2
-    int it2 = 0;
-    
-    int* nodetopo2 = new int[lenfF];
-    
-    for(int i=0; i<lenfF; i++){
-        nodetopo2[it2] = nodetopo1[inv_index[i]];
-        it2 ++;
-        
-    }
     
     //printia(lenfF, nodetopo2);
-    
+    printia(nDof,invmask_E);
+
     // define K_FF
     double* K_FF = new double[lenfF * lenfF];
     zerosda(lenfF * lenfF, K_FF);
@@ -740,7 +718,7 @@ int main(int argc, const char * argv[]) {
     for(int j=0; j<lenfF; j++){
         for(int i=0; i<lenfF; i++){
             //for(int j=0; j<lenfF; j++){
-            K_FF[itKFF] = K[nodetopo2[i]][nodetopo2[j]];
+            K_FF[itKFF] = K[invmask_E[i]][invmask_E[j]];
             //cout <<K_FF[itKFF]<< " ";
             itKFF++;
         }
@@ -754,7 +732,7 @@ int main(int argc, const char * argv[]) {
     int itKEF = 0;
     for(int j=0; j<lenfF; j++){
         for(int i=0; i<lenTE; i++){
-            K_EF[itKEF] = K[TempNodes[i]][nodetopo2[j]];
+            K_EF[itKEF] = K[TempNodes[i]][invmask_E[j]];
             //cout << K_EF[itKEF]<<" ";
             itKEF++;
         }
@@ -790,9 +768,8 @@ int main(int argc, const char * argv[]) {
     }
     //cout << endl;
     for(int i=0; i<lenfF; i++){
-        T[inv_index[i]] = T_F[i];
+        T[invmask_E[i]] = T_F[i];
     }
-    //printda(nDof, T);
     
     /// ------ compute the reaction f_E ------
     double* f_E = new double[lenTE];
@@ -815,9 +792,9 @@ int main(int argc, const char * argv[]) {
         f[TempNodes[i]] = f_E[i];
     }
     for(int i=0; i<lenfF; i++){
-        f[inv_index[i]] = f_F[i];
+        f[invmask_E[i]] = f_F[i];
     }
-    //printda(nDof, f);
+    printda(nDof, f);
     generateVtk(Coord, nnode, nelem,nelem_x,nelem_y, ElemNode, T);
     
 }

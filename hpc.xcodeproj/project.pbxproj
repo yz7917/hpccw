@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0907BD81205737090021A709 /* hpccw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0907BD80205737090021A709 /* hpccw.cpp */; };
+		0907BDA920573D4B0021A709 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 0907BDA820573D4B0021A709 /* Makefile */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,6 +25,7 @@
 
 /* Begin PBXFileReference section */
 		0907BD80205737090021A709 /* hpccw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hpccw.cpp; sourceTree = "<group>"; };
+		0907BDA820573D4B0021A709 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		0952244E205351AA00BE3975 /* hpc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = hpc; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -57,6 +59,7 @@
 		09522450205351AA00BE3975 /* hpc */ = {
 			isa = PBXGroup;
 			children = (
+				0907BDA820573D4B0021A709 /* Makefile */,
 				0907BD80205737090021A709 /* hpccw.cpp */,
 			);
 			path = hpc;
@@ -119,6 +122,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0907BDA920573D4B0021A709 /* Makefile in Sources */,
 				0907BD81205737090021A709 /* hpccw.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
