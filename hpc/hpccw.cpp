@@ -204,13 +204,13 @@ int main(int argc, const char * argv[]) {
     const int gaussorder = 2;
     
     // defining geometry
-    int a = 0;
+    double a = 0.25;
     double h1 = 1.0; // height at left edge [m]
-    double h2 = h1 * 1;  //height at beam right edge [m]
-    double L = 2.0 * h1; //beam length [m]
+    double h2 = h1 * 1.3;  //height at beam right edge [m]
+    double L = 3.0 * h1; //beam length [m]
     double b = -a * L + (h2 - h1) / L; //beam height constant
-    int nelem_y = 5; //number of elements in y-direction
-    int nelem_x = 10; //number of elements in x-direction
+    int nelem_x = 15; //number of elements in x-direction
+    int nelem_y = 8; //number of elements in y-direction
     int nnode_elem = 4; //number of nodes in each element
     int nNodeDof[4] = {1,1,1,1}; //number of Dof per node (1 = Temperature only)
     int total_Dofs = sizeof( nNodeDof ) / sizeof( nNodeDof[0] ) * nnode_elem;
@@ -231,7 +231,8 @@ int main(int argc, const char * argv[]) {
     for (int i = 0; i < nelem_x+1; i++){
         h[i] = a * pow(x[i],2) + b * x[i] + h1;
     }
-    
+    //printda(nelem_x+1, h);
+    //cout<<b<<endl;
     ///Y
     double** Y = new double*[(nelem_y+1)];
     for (int i=0; i<nelem_y+1; i++) Y[i]=new double[(nelem_x+1)];
@@ -240,6 +241,7 @@ int main(int argc, const char * argv[]) {
             Y[rownr][colnr] = - h[colnr] / 2 + rownr * h[colnr] / nelem_y;
         }
     }
+    //print2ddouble(nelem_y+1, nelem_x+1, Y);
     
     //Coord
     double** Coord = new double*[nnode];
@@ -252,7 +254,7 @@ int main(int argc, const char * argv[]) {
             k++;
         }
     }
-    
+    //print2ddouble(nnode, 2, Coord);
     ///NodeTopo
     int **NodeTopo = new int* [nelem_y+1];
     for (int i = 0; i<nelem_y+1; i++) NodeTopo[i] = new int[nelem_x+1];
@@ -265,8 +267,8 @@ int main(int argc, const char * argv[]) {
             k++;
         }
     }
-    cout << "nodetopo" << endl;
-    print2dint(nelem_y+1, nelem_x+1, NodeTopo);
+    //cout << "nodetopo" << endl;
+    //print2dint(nelem_y+1, nelem_x+1, NodeTopo);
     ///------ElemNode, eNode, eCoord, ElemX, ElemY------
     int** ElemNode = new int*[nelem];
     for(int i=0; i<nelem; i++) ElemNode[i] = new int[5];
@@ -282,12 +284,7 @@ int main(int argc, const char * argv[]) {
             elemnr += 1;
         }
     }
-    
-    double** ElemX = new double*[nelem];
-    for(int i=0; i<nelem; i++) ElemX[i] = new double[nnode_elem];
-    
-    double** ElemY = new double*[nelem];
-    for(int i=0; i<nelem; i++) ElemY[i] = new double[nnode_elem];
+    //print2dint(nelem, 5, ElemNode);
     
     int* eNodes = new int[4];
     double* eCoord = new double[8];
@@ -299,22 +296,13 @@ int main(int argc, const char * argv[]) {
             for(int j=0; j<4; j++){
                 eNodes[j] = ElemNode[i][j+1];
                 eCoord[it] = Coord[eNodes[j]][k];
+                //cout<<eCoord[it]<<" ";
                 it++;
             }
+            //cout<<endl;
         }
-        
-        // write in ElemX
-        for(int l=0; l<4;l++){
-            ElemX[i][l] = eCoord[l];
-        }
-        
-        // write in ElemY
-        for(int r=4; r<8 ; r++){
-            ElemY[i][r] = eCoord[r];
-        }
-        
+        //cout<<endl;
     }
-    
     
     ///------global dof-------
     int** globDof = new int*[nnode];
@@ -346,7 +334,7 @@ int main(int argc, const char * argv[]) {
         }
         
     }
-    
+
     // counting the global dofs and inserting in globDof
     for(int j=0;j<nnode;j++){
         eDof = globDof[j][0];
@@ -356,6 +344,7 @@ int main(int argc, const char * argv[]) {
             nDof += 1;
         }
     }
+    //print2dint(nnode, 2, globDof);
     
     ///------ Assembly of global stiffness matrix K ------
     int gauss = gaussorder; // Gauss order
@@ -384,6 +373,7 @@ int main(int argc, const char * argv[]) {
             for(int j=0; j<4; j++){
                 eNodes[j] = ElemNode[i][j+1];
                 eCoord[it] = Coord[eNodes[j]][k];
+                //cout<<eCoord[it] <<endl;
                 it++;
             }
         }
@@ -435,9 +425,9 @@ int main(int argc, const char * argv[]) {
                 GN[7]= (1-xi)/4;
                 
                 F77NAME(dgemm)('N','N',2,2,4,1.0,GN,2,eCoord,4,0.0,J,2); // Jacobian Matrix
-                
+                //printda(8,J);
                 DJ = J[0]*J[3] - J[2]*J[1];
-                
+                //cout<<DJ<<endl;
                 F77NAME(dgesv)(2,4, J, 2, ipiv, GN, 2, info); // matrix B is output GN
                 //printMatrix(2, 4, GN, 2);
                 F77NAME(dgemm)('T','N',4,2,2,1.0,GN,2,D,2,0.0,J,4); // output J is B_t*D
@@ -447,7 +437,9 @@ int main(int argc, const char * argv[]) {
                 
                 for (int k=0; k<4*4; k++){
                     Ke[k] = Ke[k] + BDB[k] * th * DJ * W[i] * W[j];
+                    //cout<<Ke[k]<<"  ";
                 }
+                //cout<<endl;
             }
         }
         
@@ -654,7 +646,7 @@ int main(int argc, const char * argv[]) {
         RedDof[counter1] = j;
         counter1 += 1;
     }
-    //printia(nDof, T);
+    //printda(nDof, T);
     
     /// ------ Partition Matrix ------
     // Init the array here
@@ -706,9 +698,6 @@ int main(int argc, const char * argv[]) {
         }
     }
     
-    
-    //printia(lenfF, nodetopo2);
-    printia(nDof,invmask_E);
 
     // define K_FF
     double* K_FF = new double[lenfF * lenfF];
@@ -770,7 +759,7 @@ int main(int argc, const char * argv[]) {
     for(int i=0; i<lenfF; i++){
         T[invmask_E[i]] = T_F[i];
     }
-    
+    //printda(nDof,T);
     /// ------ compute the reaction f_E ------
     double* f_E = new double[lenTE];
     zerosda(lenTE, f_E);

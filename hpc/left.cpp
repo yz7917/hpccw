@@ -215,7 +215,7 @@ int main(int argc, const char * argv[]) {
     const int gaussorder = 2;
     
     // defining geometry
-    int a = 0;
+    double a = 0;
     double h1 = 1.0; // height at left edge [m]
     double h2 = h1 * 1;  //height at beam right edge [m]
     double L = 2.0 * h1; //beam length [m]
