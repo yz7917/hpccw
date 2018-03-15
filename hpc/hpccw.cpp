@@ -6,189 +6,19 @@
 //  Copyright © 2018年 joe. All rights reserved.
 //
 #include <math.h>
-#include <iostream>
 #include <vector>
 #include <cmath>
 #include <iomanip>
-#include <algorithm> // for std::find
-#include <iterator> // for std::begin, std::end
 #include <iostream>
 #include <stdlib.h>//atoi, strtol
 #include <fstream>
+#include "print.h"
+#include "zeros.h"
+#include "F77.h"
+#include "gvtk.h"
 using namespace std;
 
-#define F77NAME(x) x##_
-extern "C"{
-    // DNRM2 := sqrt( x'*x )
-    void F77NAME(dnrm2)(const int& n, const double* x, const int& incx);
-    //double a = F77NAME(dnrm2)(n,x,1);
-    
-    // 点积 a = vector x * vector y
-    double F77NAME(ddot)(const int& n, const double* x, const int& incx,
-                         const double* y, const int& incy);
-    
-    void F77NAME(dgemm)(const char& TransA,const char& TransB,
-                        const int& m, const int& n,
-                        const int& k, const double& alpha,
-                        const double* A, const int& lda,
-                        const double* B, const int& ldb,
-                        const double& beta, double* C,
-                        const int& ldc);
-    
-    void F77NAME(dgemv)(const char& TransA,
-                        const int& m, const int& n,
-                        const double& alpha,
-                        const double* A, const int& lda,
-                        const double* x, const int& incx,
-                        const double& beta, double* y,
-                        const int& incy);
-    
-    void F77NAME(dgbmv)(const char& TransA,
-                        const int& m, const int& n,
-                        const int& kl, const int& ku,
-                        const double& alpha,
-                        const double* A, const int& lda,
-                        const double* x, const int& incx,
-                        const double& beta, double* y,
-                        const int& incy);
-    
-    void F77NAME(dgesv)(const int& N,const int& NRHS,double* A,
-                        const int& LDA,int* IPIV,double* B,
-                        const int& LDB, int& INFO );
-    
-    void F77NAME(dcopy)(const int& n, const double* x, const int& incx,
-                        const double* y, const int& incy);
-    
-    
-}
 
-// zeros double array
-void zerosda(int m, double* A){
-    for (int i=0; i<m; i++){
-        A[i] = 0.0;
-    }
-}
-
-// zeros int array
-void zerosia(int m, int* A){
-    for (int i=0; i<m; i++){
-        A[i] = 0;
-    }
-}
-
-// zeros int matrix
-void zerosim(int m, int n, int** A){
-    for (int i=0; i<m; i++){
-        for(int j=0; j<n; j++){
-            A[i][j] = 0;
-        }
-    }
-}
-
-// zeros double matrix
-void zerosdm(int m, int n, double** A){
-    for (int i=0; i<m; i++){
-        for(int j=0; j<n; j++){
-            A[i][j] = 0.0;
-        }
-    }
-}
-
-/// output 2D arrary double
-void print2ddouble(int m, int n, double **Y){
-    for (int rownr = 0; rownr < m; rownr++){
-        for (int colnr = 0; colnr < n; colnr++){
-            cout << setprecision(3)<<Y[rownr][colnr]<< " ";
-        }
-        cout << endl;
-    }
-}
-
-// output 2D array int
-void print2dint(int m, int n, int **Y){
-    for (int rownr = 0; rownr < m; rownr++){
-        for (int colnr = 0; colnr < n; colnr++){
-            cout << setprecision(3)<<Y[rownr][colnr]<< " ";
-        }
-        cout << endl;
-    }
-}
-
-// output int array
-void printia(int m, int *Y){
-    for (int rownr = 0; rownr < m; rownr++){
-        cout << setprecision(3)<<Y[rownr] << endl;
-    }
-}
-
-// output double array
-void printda(int m, double *Y){
-    for (int rownr = 0; rownr < m; rownr++){
-        cout << setprecision(3)<<Y[rownr] << endl;
-    }
-}
-
-// output colMajor vector
-void printVector(int n, double* v, int prec){
-    for (int i = 0; i < n; i++){
-        cout  << setprecision(prec) << setw(5)<< v[i] << endl;
-    }
-}
-
-///] output colMajor matrix
-void printMatrix(int m, int n, double* Y, int prec){
-    for (int i = 0; i < m; i++){
-        for (int j = 0; j < n; j++){
-            cout  << setprecision(prec) << Y[j*m+i] << " ";
-        }
-        cout << endl;
-    }
-}
-
-/// generate vtk file
-void generateVtk(double** Coord, int nnode, int nelem, int nelem_x, int nelem_y, int** ElemNode, double* T){
-    
-    ofstream vtkfile; //创建个对象
-    vtkfile.open("vtk.txt");
-    
-    vtkfile <<"vtk output" << endl;
-    vtkfile <<"ASCII" << endl;
-    vtkfile <<"DATASET UNSTRUCTURED_GRID" << endl;
-    vtkfile <<"POINTS 66 DOUBLE" << endl;
-    
-    // Coord
-    for(int i=0;i<nnode;i++){
-        for(int j=0;j<2;j++){
-            vtkfile << Coord[i][j] <<" ";
-        }
-        vtkfile << "0.0" <<" ";
-    }
-    cout << endl;
-    
-    vtkfile <<"CELLS" << " " << nelem <<" "<< nelem * nelem << endl;
-    
-    // ElemNode
-    for(int i=0;i<nelem;i++){
-        vtkfile << ElemNode[i][0] << " " << ElemNode[i][1] << " " << ElemNode[i][2] << " " << ElemNode[i][3] << " " << ElemNode[i][4] << endl;
-    }
-    
-    //
-    vtkfile <<"CELL_TYPES" << nelem << endl;
-    for(int i=0;i<nelem;i++){
-        vtkfile << "9" << endl;
-    }
-    
-    vtkfile <<"POINT_DATA" << nnode << endl;
-    vtkfile <<"FIELD FieldData 1"<< endl;
-    vtkfile <<"disp"<< " "<< nnode <<" "<< "double" << endl;
-    for(int i=0; i<nnode; i++){
-        vtkfile << T[i] <<" ";
-    }
-    
-    vtkfile.close(); //关闭
-    
-    
-}
 
 int main(int argc, const char * argv[]) {
     
@@ -198,7 +28,16 @@ int main(int argc, const char * argv[]) {
     const double kxy = 0.0;
     
     //define section
-    const double th =0.2; //thickness [m]
+    //const double th = atof(argv[11]); //thickness [m]
+    const double th = 0.2; //thickness [m]
+    
+//    // defining materials conductivity
+//    const double kx = atof(argv[8]);
+//    const double ky = atof(argv[9]);
+//    const double kxy = atof(argv[10]);
+//
+//    //define section
+//    const double th = atof(argv[11]); //thickness [m]
     
     //integration scheme
     const int gaussorder = 2;
@@ -211,6 +50,16 @@ int main(int argc, const char * argv[]) {
     double b = -a * L + (h2 - h1) / L; //beam height constant
     int nelem_x = 15; //number of elements in x-direction
     int nelem_y = 8; //number of elements in y-direction
+    
+//    double a = atof(argv[2]);
+//    double h1 = atof(argv[3]); // height at left edge [m]
+//    double h2 = atof(argv[4]);  //height at beam right edge [m]
+//    double L = atof(argv[5]); //beam length [m]
+//    double b = -a * L + (h2 - h1) / L; //beam height constant
+//    int nelem_x = atof(argv[6]); //number of elements in x-direction
+//    int nelem_y = atof(argv[7]); //number of elements in y-direction
+    
+    
     int nnode_elem = 4; //number of nodes in each element
     int nNodeDof[4] = {1,1,1,1}; //number of Dof per node (1 = Temperature only)
     int total_Dofs = sizeof( nNodeDof ) / sizeof( nNodeDof[0] ) * nnode_elem;
@@ -231,8 +80,7 @@ int main(int argc, const char * argv[]) {
     for (int i = 0; i < nelem_x+1; i++){
         h[i] = a * pow(x[i],2) + b * x[i] + h1;
     }
-    //printda(nelem_x+1, h);
-    //cout<<b<<endl;
+
     ///Y
     double** Y = new double*[(nelem_y+1)];
     for (int i=0; i<nelem_y+1; i++) Y[i]=new double[(nelem_x+1)];
@@ -241,7 +89,6 @@ int main(int argc, const char * argv[]) {
             Y[rownr][colnr] = - h[colnr] / 2 + rownr * h[colnr] / nelem_y;
         }
     }
-    //print2ddouble(nelem_y+1, nelem_x+1, Y);
     
     //Coord
     double** Coord = new double*[nnode];
@@ -254,7 +101,7 @@ int main(int argc, const char * argv[]) {
             k++;
         }
     }
-    //print2ddouble(nnode, 2, Coord);
+
     ///NodeTopo
     int **NodeTopo = new int* [nelem_y+1];
     for (int i = 0; i<nelem_y+1; i++) NodeTopo[i] = new int[nelem_x+1];
@@ -267,8 +114,10 @@ int main(int argc, const char * argv[]) {
             k++;
         }
     }
-    //cout << "nodetopo" << endl;
-    //print2dint(nelem_y+1, nelem_x+1, NodeTopo);
+    print2dint(nelem_y+1, nelem_x+1, NodeTopo);
+    
+    
+    
     ///------ElemNode, eNode, eCoord, ElemX, ElemY------
     int** ElemNode = new int*[nelem];
     for(int i=0; i<nelem; i++) ElemNode[i] = new int[5];
@@ -284,7 +133,6 @@ int main(int argc, const char * argv[]) {
             elemnr += 1;
         }
     }
-    //print2dint(nelem, 5, ElemNode);
     
     int* eNodes = new int[4];
     double* eCoord = new double[8];
@@ -296,13 +144,12 @@ int main(int argc, const char * argv[]) {
             for(int j=0; j<4; j++){
                 eNodes[j] = ElemNode[i][j+1];
                 eCoord[it] = Coord[eNodes[j]][k];
-                //cout<<eCoord[it]<<" ";
                 it++;
             }
-            //cout<<endl;
         }
-        //cout<<endl;
     }
+    
+    
     
     ///------global dof-------
     int** globDof = new int*[nnode];
@@ -344,9 +191,10 @@ int main(int argc, const char * argv[]) {
             nDof += 1;
         }
     }
-    //print2dint(nnode, 2, globDof);
     
-    ///------ Assembly of global stiffness matrix K ------
+    
+    
+///------ Assembly of global stiffness matrix K ------
     int gauss = gaussorder; // Gauss order
     double GP[2] = {-1 / sqrt(3),1 / sqrt(3)}; // Points
     
@@ -437,9 +285,7 @@ int main(int argc, const char * argv[]) {
                 
                 for (int k=0; k<4*4; k++){
                     Ke[k] = Ke[k] + BDB[k] * th * DJ * W[i] * W[j];
-                    //cout<<Ke[k]<<"  ";
                 }
-                //cout<<endl;
             }
         }
         
@@ -457,11 +303,9 @@ int main(int argc, const char * argv[]) {
         for (int i=0; i<4; i++){
             for(int j=0; j<4; j++){
                 K[gDof[i]][gDof[j]]=K[gDof[i]][gDof[j]]+KE[i][j];
-                //cout << K[gDof[i]][gDof[i]] <<endl;
             }
         }
     }
-    //print2ddouble(nDof, nDof, K);
     
     
     /// ------ SWITCHING CASES ------
@@ -551,7 +395,6 @@ int main(int argc, const char * argv[]) {
         n_bc[1][i-1] = fluxNodes[i];
     }
     
-    
     int nbe = nFluxNodes - 1; // Number of elements with flux load
     
     // Nodal Coordinates
@@ -605,7 +448,7 @@ int main(int argc, const char * argv[]) {
         f[node1] += fq[0];
         f[node2] += fq[1];
     }
-    
+    //printda(nDof, f);
     /// ------ Apply boundary conditions -------
     
     int** BC = new int*[nTempNodes];
@@ -637,7 +480,7 @@ int main(int argc, const char * argv[]) {
     }
     
     rDof = rDof - nTempNodes;
-    
+ 
     int* RedDof = new int[rDof];
     int counter1 = 0;
     for(int j=0; j<nDof; j++){
@@ -646,7 +489,6 @@ int main(int argc, const char * argv[]) {
         RedDof[counter1] = j;
         counter1 += 1;
     }
-    //printda(nDof, T);
     
     /// ------ Partition Matrix ------
     // Init the array here
@@ -693,7 +535,6 @@ int main(int argc, const char * argv[]) {
     for(int i=0; i<lenTE; i++){
         for(int j=0; j<lenTE; j++){
             K_EE[itKEE] = K[TempNodes[i]][TempNodes[j]];
-            //cout <<TempNodes[i]<<endl;
             itKEE++;
         }
     }
@@ -706,12 +547,9 @@ int main(int argc, const char * argv[]) {
     int itKFF = 0;
     for(int j=0; j<lenfF; j++){
         for(int i=0; i<lenfF; i++){
-            //for(int j=0; j<lenfF; j++){
             K_FF[itKFF] = K[invmask_E[i]][invmask_E[j]];
-            //cout <<K_FF[itKFF]<< " ";
             itKFF++;
         }
-        //cout << endl;
     }
     
     // define K_EF (store in ColMajor)
@@ -722,17 +560,14 @@ int main(int argc, const char * argv[]) {
     for(int j=0; j<lenfF; j++){
         for(int i=0; i<lenTE; i++){
             K_EF[itKEF] = K[TempNodes[i]][invmask_E[j]];
-            //cout << K_EF[itKEF]<<" ";
             itKEF++;
         }
-        //cout << endl;
     }
     
     /// ------ solve for d_F ------
     double* y = new double[lenfF];
     zerosda(lenfF, y);
     F77NAME(dgemv)('T',lenTE,lenfF,1.0,K_EF,lenTE,T_E,1,0.0,y,1);
-    //printda(lenofKFF, y);
     
     double* rhs = new double[lenfF];
     zerosda(lenfF, rhs);
@@ -740,7 +575,6 @@ int main(int argc, const char * argv[]) {
         rhs[i] = f_F[i] - y[i];
     }
     
-    //printda(lenfF, rhs);
     int info1 = 0;
     int* ipiv1 = new int[lenfF];
     F77NAME(dgesv)(lenfF, 1, K_FF, lenfF, ipiv1, rhs, lenfF, info1);
@@ -749,17 +583,16 @@ int main(int argc, const char * argv[]) {
     zerosda(lenfF, T_F);
     
     F77NAME(dcopy)(lenfF, rhs, 1, T_F, 1); // copy solution to T_F
-    //printda(lenfF, T_F);
     
     /// ------ reconstruct the global displacement d -------
     for(int i=0; i<lenTE; i++){
         T[TempNodes[i]] = T_E[i];
     }
-    //cout << endl;
+   
     for(int i=0; i<lenfF; i++){
         T[invmask_E[i]] = T_F[i];
     }
-    //printda(nDof,T);
+  
     /// ------ compute the reaction f_E ------
     double* f_E = new double[lenTE];
     zerosda(lenTE, f_E);
@@ -784,7 +617,7 @@ int main(int argc, const char * argv[]) {
         f[invmask_E[i]] = f_F[i];
     }
     printda(nDof, f);
-    generateVtk(Coord, nnode, nelem,nelem_x,nelem_y, ElemNode, T);
+    //generateVtk(Coord, nnode, nelem,nelem_x,nelem_y, ElemNode, T);
     
 }
 

@@ -10,6 +10,7 @@
 		0907BD81205737090021A709 /* hpccw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0907BD80205737090021A709 /* hpccw.cpp */; };
 		0909AA2520588AB600BB2782 /* left.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0909AA2320588AB600BB2782 /* left.cpp */; };
 		0909AA2820588ACB00BB2782 /* right.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0909AA2620588ACB00BB2782 /* right.cpp */; };
+		0909AA2E2059D7F400BB2782 /* makefile in Sources */ = {isa = PBXBuildFile; fileRef = 0909AA2D2059D7F400BB2782 /* makefile */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,7 +31,11 @@
 		0909AA2420588AB600BB2782 /* left.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = left.hpp; sourceTree = "<group>"; };
 		0909AA2620588ACB00BB2782 /* right.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = right.cpp; sourceTree = "<group>"; };
 		0909AA2720588ACB00BB2782 /* right.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = right.hpp; sourceTree = "<group>"; };
-		0909AA2920589C1900BB2782 /* makefile.dms */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = makefile.dms; sourceTree = "<group>"; };
+		0909AA2D2059D7F400BB2782 /* makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = makefile; sourceTree = "<group>"; };
+		0909AA2F2059EC0700BB2782 /* print.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = print.h; sourceTree = "<group>"; };
+		0909AA302059EEBA00BB2782 /* zeros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = zeros.h; sourceTree = "<group>"; };
+		0909AA312059EEFA00BB2782 /* F77.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = F77.h; sourceTree = "<group>"; };
+		0909AA322059EF3300BB2782 /* gvtk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gvtk.h; sourceTree = "<group>"; };
 		0952244E205351AA00BE3975 /* hpc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = hpc; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -64,12 +69,16 @@
 		09522450205351AA00BE3975 /* hpc */ = {
 			isa = PBXGroup;
 			children = (
-				0909AA2920589C1900BB2782 /* makefile.dms */,
+				0909AA2D2059D7F400BB2782 /* makefile */,
 				0907BD80205737090021A709 /* hpccw.cpp */,
+				0909AA322059EF3300BB2782 /* gvtk.h */,
+				0909AA312059EEFA00BB2782 /* F77.h */,
+				0909AA302059EEBA00BB2782 /* zeros.h */,
 				0909AA2320588AB600BB2782 /* left.cpp */,
 				0909AA2420588AB600BB2782 /* left.hpp */,
 				0909AA2620588ACB00BB2782 /* right.cpp */,
 				0909AA2720588ACB00BB2782 /* right.hpp */,
+				0909AA2F2059EC0700BB2782 /* print.h */,
 			);
 			path = hpc;
 			sourceTree = "<group>";
@@ -133,6 +142,7 @@
 			files = (
 				0909AA2820588ACB00BB2782 /* right.cpp in Sources */,
 				0907BD81205737090021A709 /* hpccw.cpp in Sources */,
+				0909AA2E2059D7F400BB2782 /* makefile in Sources */,
 				0909AA2520588AB600BB2782 /* left.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
